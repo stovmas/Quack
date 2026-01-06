@@ -30,7 +30,16 @@ Your note will appear as a node connected to both "stand up" and "motherhood" th
 
 ## Complete Beginner's Guide
 
-Never used GitHub or run code before? No problem! Follow these step-by-step instructions:
+Never used GitHub or run code before? No problem! Choose your setup method:
+
+- **[Direct Installation](#direct-installation-recommended)** - Run on your computer directly (faster, simpler)
+- **[Virtual Machine Setup](#virtual-machine-setup)** - Run in an isolated VM (safer, more flexible)
+
+---
+
+## Direct Installation (Recommended)
+
+This is the easiest way to get started. The app runs directly on your computer.
 
 ### Step 1: Install Required Software
 
@@ -173,6 +182,244 @@ When you're done:
 3. Type `y` if asked to confirm
 
 The app will stop running. Run `npm run dev` again to restart it!
+
+---
+
+## Virtual Machine Setup
+
+Want to run this in an isolated environment? Here's how to set up a VM!
+
+### What is a Virtual Machine (VM)?
+
+A VM is like running a computer inside your computer. It's completely isolated from your main system, which is great for:
+- **Safety**: Can't mess up your main system
+- **Testing**: Try things without commitment
+- **Cross-platform**: Run Linux on Windows/Mac or vice versa
+- **Clean slate**: Fresh environment every time
+
+### VM vs Direct: Pros & Cons
+
+| Feature | Direct Install | Virtual Machine |
+|---------|---------------|-----------------|
+| Speed | ⚡ Fast | 🐢 Slower |
+| Setup Time | 5 minutes | 20-30 minutes |
+| Disk Space | ~500MB | ~10-20GB |
+| Safety | Uses your system | Fully isolated |
+| Complexity | Simple | Moderate |
+
+### Step 1: Install VirtualBox (Free)
+
+1. Go to https://www.virtualbox.org/wiki/Downloads
+2. Download **VirtualBox** for your operating system:
+   - Windows: Click "Windows hosts"
+   - Mac: Click "OS X hosts"
+   - Linux: Use your package manager or click "Linux distributions"
+3. Install VirtualBox (just click Next/Install through the wizard)
+4. Restart your computer if prompted
+
+### Step 2: Download Ubuntu ISO
+
+Ubuntu is a beginner-friendly Linux operating system.
+
+1. Go to https://ubuntu.com/download/desktop
+2. Download **Ubuntu 22.04 LTS** (about 4-5GB file)
+3. Save it somewhere you can find it (Desktop or Downloads)
+4. Wait for download to complete (10-30 minutes depending on internet speed)
+
+### Step 3: Create a New Virtual Machine
+
+1. **Open VirtualBox**
+2. **Click "New"** button (top left)
+3. **Configure the VM:**
+   - Name: `Quack-Dev`
+   - Type: `Linux`
+   - Version: `Ubuntu (64-bit)`
+   - Click "Next"
+
+4. **Memory (RAM):**
+   - Recommended: **4096 MB** (4GB)
+   - Minimum: 2048 MB (2GB)
+   - Move slider to desired amount
+   - Click "Next"
+
+5. **Hard Disk:**
+   - Select "Create a virtual hard disk now"
+   - Click "Create"
+
+6. **Hard Disk File Type:**
+   - Keep default: "VDI (VirtualBox Disk Image)"
+   - Click "Next"
+
+7. **Storage:**
+   - Select "Dynamically allocated" (saves space)
+   - Click "Next"
+
+8. **Disk Size:**
+   - Recommended: **25 GB**
+   - Minimum: 15 GB
+   - Click "Create"
+
+### Step 4: Install Ubuntu on the VM
+
+1. **Select your VM** (`Quack-Dev`) in the list
+2. **Click "Settings"** (gear icon)
+3. **Go to "System" → "Processor"**
+   - Set CPUs to **2** (or more if you have 4+)
+4. **Go to "Display"**
+   - Increase "Video Memory" to **128 MB**
+5. **Go to "Storage"**
+   - Click the empty disk under "Controller: IDE"
+   - Click the disk icon on the right
+   - Choose "Choose a disk file..."
+   - Select the Ubuntu ISO you downloaded
+   - Click "OK"
+
+6. **Start the VM:**
+   - Click the green "Start" arrow
+   - A new window will open
+
+7. **Install Ubuntu:**
+   - Wait for Ubuntu to boot (1-2 minutes)
+   - Click "Install Ubuntu"
+   - Select language: English (or your preference)
+   - Keyboard: Auto-detect or choose manually
+   - Updates: Check "Download updates while installing"
+   - Installation type: "Erase disk and install Ubuntu" (this is SAFE - it's only the virtual disk!)
+   - Click "Install Now" → "Continue"
+   - Choose timezone
+   - Create account:
+     - Your name: (whatever you want)
+     - Computer name: `quack-dev`
+     - Username: (pick one, remember it!)
+     - Password: (pick one, remember it!)
+   - Click "Continue"
+
+8. **Wait for installation** (10-20 minutes)
+9. **Restart when prompted**
+10. **Log in with your password**
+
+### Step 5: Set Up the VM Environment
+
+Once Ubuntu is running in your VM:
+
+1. **Update the system:**
+   - Press `Ctrl + Alt + T` to open Terminal
+   - Type these commands:
+   ```bash
+   sudo apt update
+   sudo apt upgrade -y
+   ```
+   - Enter your password when asked
+   - Wait 5-10 minutes
+
+2. **Install Node.js:**
+   ```bash
+   curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+   sudo apt install -y nodejs
+   ```
+
+3. **Verify installation:**
+   ```bash
+   node --version
+   npm --version
+   ```
+   - Should show version numbers
+
+4. **Install Git:**
+   ```bash
+   sudo apt install -y git
+   ```
+
+5. **Install a web browser** (if not already installed):
+   ```bash
+   sudo apt install -y chromium-browser
+   ```
+
+### Step 6: Get the Quack Project
+
+In the VM terminal:
+
+```bash
+cd ~/Desktop
+git clone https://github.com/YOUR-USERNAME/Quack.git
+cd Quack
+npm install
+```
+
+### Step 7: Get OpenAI API Key
+
+1. **Inside the VM**, open Chromium browser
+2. Go to https://platform.openai.com/signup
+3. Create account and get API key (see Direct Installation guide above)
+4. Copy and save the key
+
+### Step 8: Run the Application
+
+In the VM terminal (inside the Quack folder):
+
+```bash
+npm run dev
+```
+
+Then:
+1. Open Chromium browser **in the VM**
+2. Go to: http://localhost:3000
+3. Click settings gear, enter API key
+4. Start recording notes!
+
+### VM Tips & Tricks
+
+**Better Performance:**
+- In VM window menu: Devices → Insert Guest Additions CD
+- Follow prompts to install (enables better graphics, shared clipboard, etc.)
+
+**Shared Clipboard** (copy/paste between host and VM):
+- VM window menu: Devices → Shared Clipboard → Bidirectional
+
+**Full Screen:**
+- VM window menu: View → Full-screen Mode
+- Or press `Host + F` (Host key is usually Right Ctrl)
+
+**Shared Folders** (access files from host):
+- Settings → Shared Folders → Add new shared folder
+- Choose a folder from your main computer
+- Access it in Ubuntu at `/media/sf_foldername`
+
+**Take Snapshots** (save VM state):
+- VM menu: Machine → Take Snapshot
+- Lets you revert if something breaks!
+
+**Shutdown the VM:**
+- Inside Ubuntu: Click power icon → Power Off
+- Or close VM window → "Save the machine state" (faster restart)
+
+### VM Troubleshooting
+
+**"VT-x/AMD-V not enabled"**
+- Restart computer and enter BIOS (usually F2, F10, or Del during boot)
+- Find "Virtualization Technology" and enable it
+- Save and exit BIOS
+
+**VM is very slow**
+- Give it more RAM in Settings → System → Base Memory
+- Give it more CPUs in Settings → System → Processor
+- Close other programs on your host computer
+
+**No internet in VM**
+- Settings → Network → Adapter 1 → Attached to: "NAT"
+- Restart VM
+
+**Can't install Guest Additions**
+```bash
+sudo apt install -y build-essential dkms linux-headers-$(uname -r)
+```
+Then try installing Guest Additions again
+
+**Microphone not working in VM**
+- Settings → Audio → Enable Audio Input
+- VM menu: Devices → Audio → Audio Input → Your Microphone
+
+---
 
 ## Setup
 
