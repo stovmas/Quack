@@ -304,36 +304,68 @@ Once Ubuntu is running in your VM:
 
 1. **Update the system:**
    - Press `Ctrl + Alt + T` to open Terminal
-   - Type these commands:
+   - Copy each command below **one at a time** (don't copy the indentation!)
+   - Paste into terminal and press Enter
+
    ```bash
    sudo apt update
+   ```
+
+   Then:
+
+   ```bash
    sudo apt upgrade -y
    ```
+
    - Enter your password when asked
    - Wait 5-10 minutes
 
-2. **Install Node.js:**
+2. **Install Node.js (Choose Method A or B):**
+
+   **Method A: Simple (Recommended for beginners)**
+   ```bash
+   sudo apt install -y nodejs npm
+   ```
+   - This installs Node.js v18 (slightly older but works great!)
+   - Fastest and easiest method
+
+   **Method B: Latest Version (Optional)**
+
+   First install curl:
+   ```bash
+   sudo apt install -y curl
+   ```
+
+   Then install Node.js 20:
    ```bash
    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+   ```
+
+   Then:
+   ```bash
    sudo apt install -y nodejs
    ```
 
 3. **Verify installation:**
    ```bash
    node --version
+   ```
+   ```bash
    npm --version
    ```
-   - Should show version numbers
+   - Should show version numbers (v18.x or v20.x for node, v9.x or v10.x for npm)
 
 4. **Install Git:**
    ```bash
    sudo apt install -y git
    ```
 
-5. **Install a web browser** (if not already installed):
+5. **Install Chromium browser** (for voice recording):
    ```bash
    sudo apt install -y chromium-browser
    ```
+
+**⚠️ IMPORTANT**: Copy commands **without** the leading spaces! Just the command itself.
 
 ### Step 6: Get the Quack Project
 
@@ -395,6 +427,18 @@ Then:
 
 ### VM Troubleshooting
 
+**"command 'curl' not found"**
+- Install curl first:
+  ```bash
+  sudo apt install -y curl
+  ```
+- Or use Method A (simple Node.js installation) which doesn't need curl
+
+**"cannot execute binary file" error**
+- You're probably copying the commands with leading spaces - don't do that!
+- Copy just the command text, not the indentation
+- Example: Copy `sudo apt update` NOT `   sudo apt update`
+
 **"VT-x/AMD-V not enabled"**
 - Restart computer and enter BIOS (usually F2, F10, or Del during boot)
 - Find "Virtualization Technology" and enable it
@@ -418,6 +462,11 @@ Then try installing Guest Additions again
 **Microphone not working in VM**
 - Settings → Audio → Enable Audio Input
 - VM menu: Devices → Audio → Audio Input → Your Microphone
+
+**Commands not working?**
+- Make sure you're inside the Ubuntu VM, not on your host computer
+- Make sure you press Enter after pasting each command
+- Don't type `bash` before the commands - just paste them directly
 
 ---
 
