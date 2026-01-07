@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Note, Theme, GraphData } from './types';
-import { extractThemes } from './services/ai';
+import { processNote } from './services/ai';
 import { generateColor } from './utils/colors';
 
 interface AppState {
@@ -12,7 +12,7 @@ interface AppState {
   apiKey: string | null;
 
   // Actions
-  addNote: (note: Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'themes'>) => Promise<void>;
+  addNote: (note: Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'themes' | 'title'>) => Promise<void>;
   updateNote: (id: string, content: string) => void;
   deleteNote: (id: string) => void;
   selectNote: (id: string | null) => void;
@@ -31,46 +31,41 @@ export const useStore = create<AppState>()(
       apiKey: null,
 
       addNote: async (noteData) => {
+        const apiKey = get().apiKey;
+
+        // Process note with AI (title, grammar, themes)
+        const processed = await processNote(noteData.transcription, apiKey || '');
+
         const newNote: Note = {
           ...noteData,
           id: crypto.randomUUID(),
+          title: processed.title,
+          content: processed.cleanedText,
           createdAt: new Date(),
           updatedAt: new Date(),
-          themes: [],
+          themes: processed.themes,
         };
 
-        // Extract themes using AI
-        const apiKey = get().apiKey;
-        if (apiKey) {
-          try {
-            const extractedThemes = await extractThemes(noteData.transcription, apiKey);
-            newNote.themes = extractedThemes;
+        // Update or create themes
+        const currentThemes = get().themes;
+        const updatedThemes = [...currentThemes];
 
-            // Update or create themes
-            const currentThemes = get().themes;
-            const updatedThemes = [...currentThemes];
+        processed.themes.forEach(themeName => {
+          const existingTheme = updatedThemes.find(t => t.name.toLowerCase() === themeName.toLowerCase());
 
-            extractedThemes.forEach(themeName => {
-              const existingTheme = updatedThemes.find(t => t.name.toLowerCase() === themeName.toLowerCase());
-
-              if (existingTheme) {
-                existingTheme.noteIds.push(newNote.id);
-              } else {
-                updatedThemes.push({
-                  id: crypto.randomUUID(),
-                  name: themeName,
-                  color: generateColor(themeName),
-                  noteIds: [newNote.id],
-                });
-              }
+          if (existingTheme) {
+            existingTheme.noteIds.push(newNote.id);
+          } else {
+            updatedThemes.push({
+              id: crypto.randomUUID(),
+              name: themeName,
+              color: generateColor(themeName),
+              noteIds: [newNote.id],
             });
-
-            set({ themes: updatedThemes });
-          } catch (error) {
-            console.error('Failed to extract themes:', error);
           }
-        }
+        });
 
+        set({ themes: updatedThemes });
         set((state) => ({ notes: [...state.notes, newNote] }));
       },
 
@@ -124,7 +119,8 @@ export const useStore = create<AppState>()(
 
         // Add note nodes and links
         state.notes.forEach((note) => {
-          const preview = note.transcription.substring(0, 30) + (note.transcription.length > 30 ? '...' : '');
+          // Use title if available, otherwise fallback to preview
+          const label = note.title || note.transcription.substring(0, 30) + (note.transcription.length > 30 ? '...' : '');
 
           // Get the color from the first theme
           const firstTheme = state.themes.find(t => note.themes.includes(t.name));
@@ -132,7 +128,7 @@ export const useStore = create<AppState>()(
 
           nodes.push({
             id: `note-${note.id}`,
-            label: preview,
+            label,
             type: 'note',
             color,
             val: 8,

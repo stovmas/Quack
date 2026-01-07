@@ -9,11 +9,6 @@ export function VoiceRecorder() {
   const chunksRef = useRef<Blob[]>([]);
 
   const startRecording = async () => {
-    if (!apiKey) {
-      alert('Please set your OpenAI API key first (click the gear icon)');
-      return;
-    }
-
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
@@ -66,9 +61,14 @@ export function VoiceRecorder() {
         transcription,
         audioBlob,
       });
+
+      // Show warning if no API key is set
+      if (!apiKey) {
+        alert('Note created! However, without an OpenAI API key, themes and grammar correction are disabled. Click the gear icon to add your API key.');
+      }
     } catch (error) {
       console.error('Error processing recording:', error);
-      alert('Error processing recording. Please try again.');
+      alert('Error processing recording. Check console for details and try again.');
     }
   };
 
